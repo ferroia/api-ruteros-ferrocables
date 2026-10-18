@@ -1,14 +1,221 @@
 const express = require('express');
-const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
-app.use(express.static(path.join(__dirname, 'public')));
 
-// Definición explícita de la ruta raíz para cargar la interfaz web
+// HTML embebido directamente en la raíz para garantizar carga inmediata
+const HTML_DASHBOARD = `<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistema de Gestión de Rutas</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-slate-100 text-slate-800 min-h-screen flex flex-col">
+  <header class="bg-slate-900 text-white shadow-lg sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
+      <div class="flex items-center space-x-3">
+        <i class="fa-solid fa-truck-fast text-2xl text-blue-400"></i>
+        <div>
+          <h1 class="text-xl font-bold">Ruteros & Transporte</h1>
+          <p class="text-xs text-slate-400">Gestión de Rutas y Conductores</p>
+        </div>
+      </div>
+      <nav class="flex space-x-2 bg-slate-800 p-1 rounded-lg">
+        <button onclick="switchTab('tab-admin')" id="btn-admin" class="px-4 py-2 text-sm font-medium rounded-md text-white bg-blue-600 shadow">Admin</button>
+        <button onclick="switchTab('tab-driver')" id="btn-driver" class="px-4 py-2 text-sm font-medium rounded-md text-slate-300">Conductor</button>
+        <button onclick="switchTab('tab-monitor')" id="btn-monitor" class="px-4 py-2 text-sm font-medium rounded-md text-slate-300">Monitoreo</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="flex-grow max-w-7xl w-full mx-auto px-4 py-6">
+    <!-- ADMIN -->
+    <section id="tab-admin" class="space-y-6">
+      <div class="bg-white rounded-xl shadow-sm border p-6">
+        <h2 class="text-lg font-bold border-b pb-3 mb-4">Crear Nueva Ruta de Transporte</h2>
+        <form id="admin-form" onsubmit="handleCreateRoute(event)" class="space-y-4">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <label class="block text-xs font-semibold uppercase mb-1">Fecha</label>
+              <input type="date" id="route-date" required class="w-full px-3 py-2 border rounded-lg text-sm">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold uppercase mb-1">Conductor</label>
+              <input type="text" id="driver-name" placeholder="Ej. Carlos Gómez" required class="w-full px-3 py-2 border rounded-lg text-sm">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold uppercase mb-1">Placa Vehículo</label>
+              <input type="text" id="vehicle-plate" placeholder="Ej. XYZ-789" required class="w-full px-3 py-2 border rounded-lg text-sm">
+            </div>
+          </div>
+          <div class="border-t pt-4">
+            <div class="flex justify-between items-center mb-3">
+              <h3 class="text-sm font-semibold">Paradas de la Ruta</h3>
+              <button type="button" onclick="addStopRow()" class="text-xs bg-slate-100 px-3 py-1.5 rounded-lg border">+ Agregar Parada</button>
+            </div>
+            <div id="stops-container" class="space-y-3"></div>
+          </div>
+          <div class="flex justify-end pt-4">
+            <button type="submit" class="bg-blue-600 text-white font-medium px-6 py-2.5 rounded-lg text-sm">Registrar Ruta</button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- CONDUCTOR -->
+    <section id="tab-driver" class="hidden space-y-6">
+      <div class="bg-white rounded-xl shadow-sm border p-6 max-w-xl">
+        <h2 class="text-lg font-bold border-b pb-3 mb-4">Registro de Paradas</h2>
+        <form id="driver-form" onsubmit="handleDriverUpdate(event)" class="space-y-4">
+          <div>
+            <label class="block text-xs font-semibold uppercase mb-1">ID Parada</label>
+            <input type="number" id="stop-id" placeholder="Ej. 1" required class="w-full px-3 py-2 border rounded-lg text-sm">
+          </div>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-semibold uppercase mb-1">Hora Llegada</label>
+              <input type="text" id="arrival-time" placeholder="08:30 AM" required class="w-full px-3 py-2 border rounded-lg text-sm">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold uppercase mb-1">Hora Salida</label>
+              <input type="text" id="departure-time" placeholder="09:15 AM" required class="w-full px-3 py-2 border rounded-lg text-sm">
+            </div>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold uppercase mb-1">Novedad / Observación</label>
+            <textarea id="novelty" rows="3" placeholder="Entregado..." class="w-full px-3 py-2 border rounded-lg text-sm"></textarea>
+          </div>
+          <button type="submit" class="w-full bg-emerald-600 text-white font-medium py-2.5 rounded-lg text-sm">Actualizar Parada</button>
+        </form>
+      </div>
+    </section>
+
+    <!-- MONITOREO -->
+    <section id="tab-monitor" class="hidden space-y-6">
+      <div class="bg-white rounded-xl shadow-sm border p-6">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-lg font-bold">Rutas Registradas</h2>
+          <button onclick="fetchRoutes()" class="text-xs bg-slate-100 px-3 py-1.5 rounded-lg border">Actualizar</button>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse text-sm">
+            <thead>
+              <tr class="bg-slate-50 border-b">
+                <th class="py-3 px-4">ID</th>
+                <th class="py-3 px-4">Fecha</th>
+                <th class="py-3 px-4">Conductor</th>
+                <th class="py-3 px-4">Placa</th>
+                <th class="py-3 px-4">Estado</th>
+              </tr>
+            </thead>
+            <tbody id="routes-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const API_BASE = window.location.origin;
+    const ADMIN_KEY = 'CLAVE_ADMIN_2026';
+
+    function switchTab(tabId) {
+      ['tab-admin', 'tab-driver', 'tab-monitor'].forEach(id => {
+        document.getElementById(id).classList.add('hidden');
+      });
+      document.getElementById(tabId).classList.remove('hidden');
+      if (tabId === 'tab-monitor') fetchRoutes();
+    }
+
+    function addStopRow() {
+      const container = document.getElementById('stops-container');
+      const row = document.createElement('div');
+      row.className = 'grid grid-cols-1 md:grid-cols-2 gap-3 bg-slate-50 p-3 rounded-lg border stop-row';
+      row.innerHTML = \`
+        <input type="text" placeholder="Nombre Cliente" required class="stop-client px-3 py-2 border rounded-lg text-sm">
+        <input type="text" placeholder="Número Remisión" required class="stop-invoice px-3 py-2 border rounded-lg text-sm">
+      \`;
+      container.appendChild(row);
+    }
+
+    async function handleCreateRoute(e) {
+      e.preventDefault();
+      const stops = Array.from(document.querySelectorAll('.stop-row')).map(row => ({
+        cliente_nombre: row.querySelector('.stop-client').value,
+        numero_factura_remision: row.querySelector('.stop-invoice').value
+      }));
+
+      const payload = {
+        fecha: document.getElementById('route-date').value,
+        conductor_nombre: document.getElementById('driver-name').value,
+        vehiculo_placa: document.getElementById('vehicle-plate').value,
+        paradas: stops
+      };
+
+      const res = await fetch(API_BASE + '/api/v1/admin/ruteros', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-admin-code': ADMIN_KEY },
+        body: JSON.stringify(payload)
+      });
+      if (res.ok) {
+        alert('Ruta creada con éxito');
+        document.getElementById('admin-form').reset();
+        document.getElementById('stops-container').innerHTML = '';
+        addStopRow();
+      } else {
+        alert('Error al crear ruta');
+      }
+    }
+
+    async function handleDriverUpdate(e) {
+      e.preventDefault();
+      const stopId = document.getElementById('stop-id').value;
+      const payload = {
+        hora_llegada: document.getElementById('arrival-time').value,
+        hora_salida: document.getElementById('departure-time').value,
+        novedad: document.getElementById('novelty').value
+      };
+
+      const res = await fetch(API_BASE + '/api/v1/paradas/' + stopId, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      if (res.ok) {
+        alert('Parada actualizada');
+        document.getElementById('driver-form').reset();
+      } else {
+        alert('Error al actualizar');
+      }
+    }
+
+    async function fetchRoutes() {
+      const res = await fetch(API_BASE + '/api/v1/ruteros');
+      const data = await res.json();
+      const tbody = document.getElementById('routes-tbody');
+      tbody.innerHTML = data.map(r => \`
+        <tr class="border-b">
+          <td class="py-3 px-4 font-bold text-blue-600">#\${r.id}</td>
+          <td class="py-3 px-4">\${r.fecha}</td>
+          <td class="py-3 px-4">\${r.conductor_nombre}</td>
+          <td class="py-3 px-4">\${r.vehiculo_placa}</td>
+          <td class="py-3 px-4"><span class="px-2 py-1 rounded bg-emerald-100 text-emerald-700 text-xs">\${r.estado}</span></td>
+        </tr>
+      \`).join('');
+    }
+
+    addStopRow();
+  </script>
+</body>
+</html>`;
+
+// Servir el panel visual directamente en la raíz
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  res.send(HTML_DASHBOARD);
 });
 
 // Endpoint de datos
@@ -26,5 +233,5 @@ app.get('/api/v1/ruteros', (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`Servidor activo en puerto ${PORT}`);
+  console.log(`Servidor escuchando en puerto ${PORT}`);
 });
