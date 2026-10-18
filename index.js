@@ -6,12 +6,12 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Ruta principal que entrega la interfaz visual
+// Definición explícita de la ruta raíz para cargar la interfaz web
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// Endpoint de prueba de datos
+// Endpoint de datos
 app.get('/api/v1/ruteros', (req, res) => {
   res.json([
     {
@@ -26,5 +26,5 @@ app.get('/api/v1/ruteros', (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`Servidor corriendo en puerto ${PORT}`);
+  console.log(`Servidor activo en puerto ${PORT}`);
 });
