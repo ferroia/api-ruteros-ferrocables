@@ -26,8 +26,8 @@ const HTML = `<!DOCTYPE html>
 </body>
 </html>`;
 
-// Responder en TODAS las rutas posibles
-app.get('*', (req, res) => {
+// Sintaxis correcta para Express v5 / path-to-regexp
+app.get('/', (req, res) => {
   res.send(HTML);
 });
 
