@@ -33,10 +33,10 @@ const DASHBOARD_HTML = `<!DOCTYPE html>
         </div>
       </div>
       <nav class="flex space-x-2 bg-slate-950 p-1.5 rounded-xl border border-slate-800">
-        <button onclick="switchTab('tab-admin')" id="btn-admin" class="px-4 py-2 text-sm font-semibold rounded-lg text-white bg-blue-600 shadow-md">
+        <button onclick="switchTab('tab-admin')" id="btn-admin" class="px-4 py-2 text-sm font-semibold rounded-lg text-slate-400 hover:text-white">
           <i class="fa-solid fa-user-shield mr-1"></i> Admin
         </button>
-        <button onclick="switchTab('tab-driver')" id="btn-driver" class="px-4 py-2 text-sm font-semibold rounded-lg text-slate-400 hover:text-white">
+        <button onclick="switchTab('tab-driver')" id="btn-driver" class="px-4 py-2 text-sm font-semibold rounded-lg text-white bg-blue-600 shadow-md">
           <i class="fa-solid fa-truck-steer mr-1"></i> Conductor
         </button>
         <button onclick="switchTab('tab-monitor')" id="btn-monitor" class="px-4 py-2 text-sm font-semibold rounded-lg text-slate-400 hover:text-white">
@@ -50,8 +50,7 @@ const DASHBOARD_HTML = `<!DOCTYPE html>
   <main class="flex-grow max-w-7xl w-full mx-auto p-6 space-y-8">
     
     <!-- SECCIÓN ADMINISTRADOR -->
-    <section id="tab-admin" class="space-y-8">
-      
+    <section id="tab-admin" class="hidden space-y-8">
       <!-- GESTIÓN DE CONDUCTORES -->
       <div class="bg-slate-900 rounded-2xl border border-slate-800 p-6 shadow-xl">
         <div class="border-b border-slate-800 pb-4 mb-6 flex justify-between items-center">
@@ -61,7 +60,6 @@ const DASHBOARD_HTML = `<!DOCTYPE html>
           <span class="text-xs bg-slate-800 text-blue-400 px-3 py-1 rounded-full border border-slate-700 font-mono">BASE DE DATOS</span>
         </div>
 
-        <!-- FORMULARIO CONDUCTOR -->
         <form id="form-conductor" onsubmit="handleGuardarConductor(event)" class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6 bg-slate-950 p-4 rounded-xl border border-slate-800">
           <input type="hidden" id="edit-index" value="-1">
           <div>
@@ -86,7 +84,6 @@ const DASHBOARD_HTML = `<!DOCTYPE html>
           </div>
         </form>
 
-        <!-- TABLA CONDUCTORES -->
         <div class="overflow-x-auto">
           <table class="w-full text-left text-sm border-collapse">
             <thead>
@@ -150,34 +147,49 @@ const DASHBOARD_HTML = `<!DOCTYPE html>
       </div>
     </section>
 
-    <!-- SECCIÓN CONDUCTOR -->
-    <section id="tab-driver" class="hidden space-y-6">
-      <div class="bg-slate-900 rounded-2xl border border-slate-800 p-6 shadow-xl max-w-2xl mx-auto">
-        <div class="border-b border-slate-800 pb-4 mb-6 flex justify-between items-center">
+    <!-- SECCIÓN CONDUCTOR (DESPLEGABLE DE PEDIDOS) -->
+    <section id="tab-driver" class="space-y-6">
+      <div class="bg-slate-900 rounded-2xl border border-slate-800 p-6 shadow-xl max-w-xl mx-auto">
+        <div class="border-b border-slate-800 pb-4 mb-6">
           <h2 class="text-lg font-bold text-white flex items-center gap-2">
-            <i class="fa-solid fa-truck-steer text-emerald-500"></i> Panel de Control del Conductor
+            <i class="fa-solid fa-truck-steer text-emerald-500"></i> Reporte del Conductor
           </h2>
-          <span class="text-xs bg-slate-800 text-emerald-400 px-3 py-1 rounded-full border border-slate-700 font-mono">MIS PEDIDOS</span>
+          <p class="text-xs text-slate-400 mt-1">Selecciona tu nombre y la entrega que estás ejecutando</p>
         </div>
 
-        <div class="mb-6 bg-slate-950 p-4 rounded-xl border border-slate-800 flex flex-col md:flex-row gap-4 items-center justify-between">
-          <div class="w-full md:w-2/3">
-            <label class="block text-xs font-bold text-slate-400 uppercase mb-2">Selecciona tu Nombre</label>
-            <select id="select-driver-login" onchange="cargarPedidosConductor()" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500">
-              <option value="">-- SELECCIONAR CONDUCTOR --</option>
+        <form onsubmit="handleRegistrarEntregaConductor(event)" class="space-y-5">
+          <!-- SELECTOR DE CONDUCTOR -->
+          <div>
+            <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Conductor</label>
+            <select id="driver-select-nombre" onchange="cargarPedidosEnDesplegable()" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-slate-200 text-sm focus:outline-none focus:border-emerald-500">
+              <option value="">-- SELECCIONAR TU NOMBRE --</option>
             </select>
           </div>
-          <div class="w-full md:w-1/3 text-right">
-            <button onclick="cargarPedidosConductor()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 px-4 rounded-xl text-sm transition-all flex items-center justify-center gap-2">
-              <i class="fa-solid fa-arrows-rotate"></i> Consultar
-            </button>
-          </div>
-        </div>
 
-        <!-- CONTENEDOR DE PEDIDOS ASIGNADOS -->
-        <div id="driver-pedidos-list" class="space-y-4">
-          <p class="text-xs text-slate-500 text-center py-6">Selecciona tu nombre arriba para ver tus pedidos asignados.</p>
-        </div>
+          <!-- SELECTOR DE PEDIDOS/REMISIONES EN DESPLEGABLE -->
+          <div>
+            <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Pedidos / Entregas Asignadas</label>
+            <select id="driver-select-pedido" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-slate-200 text-sm focus:outline-none focus:border-emerald-500">
+              <option value="">-- PRIMERO SELECCIONA TU NOMBRE --</option>
+            </select>
+          </div>
+
+          <!-- TIEMPOS -->
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Hora Llegada</label>
+              <input type="text" id="driver-llegada" placeholder="08:30 AM" onkeyup="this.value = this.value.toUpperCase();" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-slate-200 text-sm focus:outline-none focus:border-emerald-500">
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Hora Salida</label>
+              <input type="text" id="driver-salida" placeholder="09:15 AM" onkeyup="this.value = this.value.toUpperCase();" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-slate-200 text-sm focus:outline-none focus:border-emerald-500">
+            </div>
+          </div>
+
+          <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl shadow-lg shadow-emerald-600/30 transition-all text-sm flex items-center justify-center gap-2">
+            <i class="fa-solid fa-circle-check"></i> Registrar Entrega Realizada
+          </button>
+        </form>
       </div>
     </section>
 
@@ -195,7 +207,7 @@ const DASHBOARD_HTML = `<!DOCTYPE html>
                 <th class="p-3">Fecha</th>
                 <th class="p-3">Conductor</th>
                 <th class="p-3">Placa</th>
-                <th class="p-3">N° Pedidos</th>
+                <th class="p-3">Entregas</th>
                 <th class="p-3">Estado</th>
               </tr>
             </thead>
@@ -207,10 +219,10 @@ const DASHBOARD_HTML = `<!DOCTYPE html>
   </main>
 
   <script>
-    // DATOS EN MEMORIA LOCAL Y PERSISTENCIA
+    // DATOS PERSISTENTES
     let conductores = JSON.parse(localStorage.getItem('fc_conductores')) || [
-      { nombre: 'CARLOS GÓMEZ', placa: 'XYZ-789', telefono: '3001234567' },
-      { nombre: 'ANDRÉS LÓPEZ', placa: 'MNO-456', telefono: '3109876543' }
+      { nombre: 'JUAN PÉREZ', placa: 'XYZ-789', telefono: '3001234567' },
+      { nombre: 'CARLOS GÓMEZ', placa: 'MNO-456', telefono: '3109876543' }
     ];
 
     let ruteros = JSON.parse(localStorage.getItem('fc_ruteros')) || [];
@@ -224,9 +236,10 @@ const DASHBOARD_HTML = `<!DOCTYPE html>
     function guardarRuterosLS() {
       localStorage.setItem('fc_ruteros', JSON.stringify(ruteros));
       renderRuterosMonitor();
+      cargarPedidosEnDesplegable();
     }
 
-    // GESTIÓN CONDUCTORES
+    // CONDUCTORES
     function renderConductores() {
       const tbody = document.getElementById('tbody-conductores');
       tbody.innerHTML = '';
@@ -292,7 +305,7 @@ const DASHBOARD_HTML = `<!DOCTYPE html>
 
     function poblarSelectoresConductores() {
       const selRutero = document.getElementById('rutero-conductor');
-      const selDriverLogin = document.getElementById('select-driver-login');
+      const selDriverNombre = document.getElementById('driver-select-nombre');
       
       let options = '<option value="">-- SELECCIONAR CONDUCTOR --</option>';
       conductores.forEach(c => {
@@ -300,7 +313,7 @@ const DASHBOARD_HTML = `<!DOCTYPE html>
       });
 
       selRutero.innerHTML = options;
-      selDriverLogin.innerHTML = options;
+      selDriverNombre.innerHTML = options;
     }
 
     function actualizarPlacaConductor() {
@@ -309,7 +322,7 @@ const DASHBOARD_HTML = `<!DOCTYPE html>
       document.getElementById('rutero-placa').value = cond ? cond.placa : '';
     }
 
-    // ENTREGAS DEL RUTERO
+    // RUTEROS
     function addEntregaRow() {
       const container = document.getElementById('entregas-container');
       const row = document.createElement('div');
@@ -374,53 +387,50 @@ const DASHBOARD_HTML = `<!DOCTYPE html>
       document.getElementById('entregas-container').innerHTML = '';
       addEntregaRow();
 
-      alert('RUTERO N° ' + nuevoRutero.id + ' ASIGNADO EXITOSAMENTE A ' + conductor);
+      alert('RUTERO N° ' + nuevoRutero.id + ' CREADO CON ÉXITO');
     }
 
-    // PANEL CONDUCTOR
-    function cargarPedidosConductor() {
-      const nombreCond = document.getElementById('select-driver-login').value;
-      const container = document.getElementById('driver-pedidos-list');
-      container.innerHTML = '';
+    // PANEL CONDUCTOR: CARGA DE PEDIDOS ASIGNADOS
+    function cargarPedidosEnDesplegable() {
+      const nombreCond = document.getElementById('driver-select-nombre').value;
+      const selPedido = document.getElementById('driver-select-pedido');
 
       if (!nombreCond) {
-        container.innerHTML = '<p class="text-xs text-slate-500 text-center py-6">Selecciona tu nombre arriba para ver tus pedidos asignados.</p>';
+        selPedido.innerHTML = '<option value="">-- PRIMERO SELECCIONA TU NOMBRE --</option>';
         return;
       }
 
       const misRuteros = ruteros.filter(r => r.conductor === nombreCond);
+      let options = '<option value="">-- SELECCIONAR PEDIDO / REMISIÓN --</option>';
+      let cont = 0;
 
-      if (misRuteros.length === 0) {
-        container.innerHTML = '<div class="p-4 bg-slate-950 rounded-xl border border-slate-800 text-center text-slate-400 text-sm">No tienes ruteros ni pedidos asignados por el momento.</div>';
+      misRuteros.forEach(r => {
+        r.entregas.forEach(ent => {
+          cont++;
+          options += \`<option value="\${ent.numDoc}">\${ent.tipoDoc} \${ent.numDoc} - \${ent.cliente} (\${ent.estado})</option>\`;
+        });
+      });
+
+      if (cont === 0) {
+        selPedido.innerHTML = '<option value="">-- NO TIENES PEDIDOS ASIGNADOS --</option>';
+      } else {
+        selPedido.innerHTML = options;
+      }
+    }
+
+    function handleRegistrarEntregaConductor(e) {
+      e.preventDefault();
+      const cond = document.getElementById('driver-select-nombre').value;
+      const ped = document.getElementById('driver-select-pedido').value;
+
+      if (!ped) {
+        alert('Por favor selecciona un pedido válido de la lista.');
         return;
       }
 
-      misRuteros.forEach(r => {
-        let htmlEntregas = '';
-        r.entregas.forEach((ent, idx) => {
-          htmlEntregas += \`
-            <div class="bg-slate-900 p-3.5 rounded-xl border border-slate-800 flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
-              <div>
-                <p class="text-sm font-bold text-white">\${ent.cliente}</p>
-                <p class="text-xs text-slate-400">\${ent.tipoDoc}: <span class="font-mono text-blue-400">\${ent.numDoc}</span></p>
-              </div>
-              <div class="flex items-center gap-2">
-                <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-950 text-amber-400 border border-amber-800">\${ent.estado}</span>
-              </div>
-            </div>
-          \`;
-        });
-
-        container.innerHTML += \`
-          <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-3">
-            <div class="flex justify-between items-center border-b border-slate-800 pb-2">
-              <span class="text-xs font-bold text-blue-400">\${r.id} | Fecha: \${r.fecha}</span>
-              <span class="text-xs text-slate-400">Placa: \${r.placa}</span>
-            </div>
-            <div class="space-y-2">\${htmlEntregas}</div>
-          </div>
-        \`;
-      });
+      alert('ENTREGA DEL DOCUMENTO ' + ped + ' REGISTRADA CON ÉXITO POR ' + cond);
+      document.getElementById('driver-llegada').value = '';
+      document.getElementById('driver-salida').value = '';
     }
 
     // MONITOREO
@@ -462,8 +472,6 @@ const DASHBOARD_HTML = `<!DOCTYPE html>
           btn.className = 'px-4 py-2 text-sm font-semibold rounded-lg text-slate-400 hover:text-white';
         }
       });
-
-      if (tabId === 'tab-driver') cargarPedidosConductor();
     }
 
     // INICIALIZACIÓN
