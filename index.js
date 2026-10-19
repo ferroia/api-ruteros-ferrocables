@@ -26,7 +26,6 @@ const HTML = `<!DOCTYPE html>
 </body>
 </html>`;
 
-// Sintaxis correcta para Express v5 / path-to-regexp
 app.get('/', (req, res) => {
   res.send(HTML);
 });
