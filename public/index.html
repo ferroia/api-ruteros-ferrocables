@@ -55,7 +55,18 @@
           <div class="flex justify-end pt-4">
             <button type="submit" class="bg-blue-600 text-white font-medium px-6 py-2.5 rounded-lg text-sm">Registrar Ruta</button>
           </div>
-        </form>
+        
+  <div class="mb-4">
+    <label class="block text-sm font-medium mb-2 text-slate-300">Firma del Cliente</label>
+    <div class="border border-slate-600 rounded-lg bg-white overflow-hidden">
+      <canvas id="signatureCanvas" class="w-full h-36 touch-none cursor-crosshair"></canvas>
+    </div>
+    <div class="flex justify-end mt-1">
+      <button type="button" id="clearCanvasBtn" class="text-xs text-red-400 hover:underline">Limpiar Firma</button>
+    </div>
+  </div>
+
+</form>
       </div>
     </section>
 
@@ -83,7 +94,18 @@
             <textarea id="novelty" rows="3" placeholder="Entregado..." class="w-full px-3 py-2 border rounded-lg text-sm"></textarea>
           </div>
           <button type="submit" class="w-full bg-emerald-600 text-white font-medium py-2.5 rounded-lg text-sm">Actualizar Parada</button>
-        </form>
+        
+  <div class="mb-4">
+    <label class="block text-sm font-medium mb-2 text-slate-300">Firma del Cliente</label>
+    <div class="border border-slate-600 rounded-lg bg-white overflow-hidden">
+      <canvas id="signatureCanvas" class="w-full h-36 touch-none cursor-crosshair"></canvas>
+    </div>
+    <div class="flex justify-end mt-1">
+      <button type="button" id="clearCanvasBtn" class="text-xs text-red-400 hover:underline">Limpiar Firma</button>
+    </div>
+  </div>
+
+</form>
       </div>
     </section>
 
@@ -203,5 +225,64 @@
 
     addStopRow();
   </script>
+
+<script>
+  const canvas = document.getElementById('signatureCanvas');
+  const ctx = canvas ? canvas.getContext('2d') : null;
+  const clearBtn = document.getElementById('clearCanvasBtn');
+  let isDrawing = false;
+
+  if (canvas && ctx) {
+    function resizeCanvas() {
+      canvas.width = canvas.parentElement.clientWidth;
+      canvas.height = 140;
+      ctx.strokeStyle = '#000000';
+      ctx.lineWidth = 2;
+      ctx.lineCap = 'round';
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    function getCoords(e) {
+      const rect = canvas.getBoundingClientRect();
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      return { x: clientX - rect.left, y: clientY - rect.top };
+    }
+
+    function startDrawing(e) {
+      isDrawing = true;
+      const { x, y } = getCoords(e);
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+    }
+
+    function draw(e) {
+      if (!isDrawing) return;
+      e.preventDefault();
+      const { x, y } = getCoords(e);
+      ctx.lineTo(x, y);
+      ctx.stroke();
+    }
+
+    function stopDrawing() { isDrawing = false; }
+
+    canvas.addEventListener('mousedown', startDrawing);
+    canvas.addEventListener('mousemove', draw);
+    canvas.addEventListener('mouseup', stopDrawing);
+    canvas.addEventListener('mouseleave', stopDrawing);
+
+    canvas.addEventListener('touchstart', startDrawing, { passive: false });
+    canvas.addEventListener('touchmove', draw, { passive: false });
+    canvas.addEventListener('touchend', stopDrawing);
+
+    if (clearBtn) {
+      clearBtn.addEventListener('click', () => {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      });
+    }
+  }
+</script>
+
 </body>
 </html>
