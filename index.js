@@ -12,6 +12,21 @@ const DASHBOARD_HTML = `<!DOCTYPE html>
   <title>Ferrocables - Gestión de Ruteros</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    /* Forzar fondo oscuro y control de calendario nativo */
+    input[type="date"] {
+      color-scheme: dark;
+    }
+    input[type="date"]::-webkit-calendar-picker-indicator {
+      background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="bi bi-calendar-event" viewBox="0 0 16 16"><path d="M11 6.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1z"/><path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H1a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1z"/></svg>') !important;
+      background-repeat: no-repeat !important;
+      background-position: center !important;
+      cursor: pointer !important;
+      opacity: 1 !important;
+      width: 20px;
+      height: 20px;
+    }
+  </style>
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col font-sans">
   <!-- ENCABEZADO -->
@@ -52,20 +67,23 @@ const DASHBOARD_HTML = `<!DOCTYPE html>
           <span class="text-xs bg-slate-800 text-blue-400 px-3 py-1 rounded-full border border-slate-700 font-mono">FERROCABLES LOGÍSTICA</span>
         </div>
 
-        <form id="admin-rutero-form" onsubmit="event.preventDefault(); alert('Rutero de asignación creado con éxito');" class="space-y-6">
+        <form id="admin-rutero-form" onsubmit="event.preventDefault(); alert('Rutero guardado con éxito');" class="space-y-6">
           <!-- DATOS GENERALES DE LA RUTA -->
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4 bg-slate-950 p-4 rounded-xl border border-slate-800">
             <div>
               <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Fecha de Despacho</label>
-              <input type="date" required class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500">
+              <div class="relative flex items-center">
+                <input type="date" id="input-fecha-despacho" required class="w-full bg-slate-900 border border-slate-700 rounded-xl pl-3.5 pr-10 py-2.5 text-sm text-white font-medium focus:outline-none focus:border-blue-500">
+                <i class="fa-solid fa-calendar-days text-white absolute right-3 pointer-events-none text-base"></i>
+              </div>
             </div>
             <div>
               <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Conductor Asignado</label>
-              <input type="text" placeholder="Nombre Conductor" required class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500">
+              <input type="text" placeholder="Nombre Conductor" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500">
             </div>
             <div>
               <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Placa Vehículo</label>
-              <input type="text" placeholder="Ej. XYZ-789" required class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500">
+              <input type="text" placeholder="Ej. XYZ-789" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500">
             </div>
           </div>
 
@@ -180,24 +198,23 @@ const DASHBOARD_HTML = `<!DOCTYPE html>
       row.innerHTML = \`
         <div class="md:col-span-5">
           <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Empresa / Cliente</label>
-          <input type="text" placeholder="Nombre de la empresa" required class="w-full bg-slate-900 border border-slate-800 text-slate-200 px-3 py-2 rounded-lg text-sm focus:outline-none focus:border-blue-500">
+          <input type="text" placeholder="Nombre de la empresa" required class="w-full bg-slate-900 border border-slate-700 text-slate-200 px-3 py-2 rounded-lg text-sm focus:outline-none focus:border-blue-500">
         </div>
         <div class="md:col-span-3">
           <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Tipo Documento</label>
-          <select required class="w-full bg-slate-900 border border-slate-800 text-slate-200 px-3 py-2 rounded-lg text-sm focus:outline-none focus:border-blue-500">
+          <select required class="w-full bg-slate-900 border border-slate-700 text-slate-200 px-3 py-2 rounded-lg text-sm focus:outline-none focus:border-blue-500">
             <option value="Factura">Factura</option>
             <option value="Remisión">Remisión</option>
           </select>
         </div>
         <div class="md:col-span-4">
           <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Número de Documento</label>
-          <input type="text" placeholder="Ej. F-1002 o REM-450" required class="w-full bg-slate-900 border border-slate-800 text-slate-200 px-3 py-2 rounded-lg text-sm focus:outline-none focus:border-blue-500">
+          <input type="text" placeholder="Ej. F-1002 o REM-450" required class="w-full bg-slate-900 border border-slate-700 text-slate-200 px-3 py-2 rounded-lg text-sm focus:outline-none focus:border-blue-500">
         </div>
       \`;
       container.appendChild(row);
     }
 
-    // Agregar primera entrega por defecto
     addEntregaRow();
   </script>
 </body>
