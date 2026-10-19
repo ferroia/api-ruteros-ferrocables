@@ -20,51 +20,52 @@
         </div>
       </div>
       <nav class="flex space-x-2 bg-slate-900 p-1 rounded-lg border border-slate-800">
-        <button id="btn-admin" class="px-4 py-2 text-sm font-medium rounded-md text-slate-300 hover:text-white transition">
+        <button id="btn-admin" onclick="switchTab('admin')" class="tab-btn px-4 py-2 text-sm font-medium rounded-md text-slate-300 hover:text-white transition">
           <i class="fa-solid fa-user-shield mr-2"></i>Admin
         </button>
-        <button id="btn-conductor" class="px-4 py-2 text-sm font-medium rounded-md text-white bg-blue-600 shadow">
+        <button id="btn-conductor" onclick="switchTab('conductor')" class="tab-btn px-4 py-2 text-sm font-medium rounded-md text-white bg-blue-600 shadow">
           <i class="fa-solid fa-steering-wheel mr-2"></i>Conductor
         </button>
-        <button id="btn-monitoreo" class="px-4 py-2 text-sm font-medium rounded-md text-slate-300 hover:text-white transition">
+        <button id="btn-monitoreo" onclick="switchTab('monitoreo')" class="tab-btn px-4 py-2 text-sm font-medium rounded-md text-slate-300 hover:text-white transition">
           <i class="fa-solid fa-chart-line mr-2"></i>Monitoreo
         </button>
       </nav>
     </div>
   </header>
 
-  <!-- Main Content / Formulario Conductor -->
+  <!-- Content Container -->
   <main class="flex-grow flex items-center justify-center p-4">
-    <div class="w-full max-w-lg bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl p-6 sm:p-8 space-y-6">
+
+    <!-- PANEL CONDUCTOR -->
+    <div id="view-conductor" class="w-full max-w-lg bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl p-6 sm:p-8 space-y-6">
       <div>
         <h2 class="text-xl font-bold text-white">Reporte del Conductor</h2>
         <p class="text-xs text-slate-400 mt-1">Selecciona tu nombre y la entrega que estás ejecutando</p>
       </div>
 
-      <form id="conductorForm" class="space-y-4">
+      <form id="conductorForm" class="space-y-4" onsubmit="registrarEntrega(event)">
         <div>
           <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Conductor</label>
-          <select name="conductor" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-sm text-slate-200 focus:outline-none focus:border-blue-500">
-            <option value="">-- SELECCIONAR CONDUCTOR --</option>
+          <select id="selectConductor" onchange="cargarPedidosPendientes()" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-sm text-slate-200 focus:outline-none focus:border-blue-500">
             <option value="ANDRES LOPEZ">ANDRÉS LÓPEZ (MNO-456)</option>
           </select>
         </div>
 
         <div>
           <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Pedidos / Entregas Asignadas</label>
-          <select name="pedido" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-sm text-slate-200 focus:outline-none focus:border-blue-500">
-            <option value="">-- SELECCIONAR PEDIDO / REMISIÓN --</option>
+          <select id="selectPedidos" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-sm text-slate-200 focus:outline-none focus:border-blue-500" required>
+            <!-- Carga dinámica -->
           </select>
         </div>
 
         <div class="grid grid-cols-2 gap-4">
           <div>
             <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Hora Llegada</label>
-            <input type="text" name="horaLlegada" value="08:30 AM" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-sm text-slate-200 focus:outline-none focus:border-blue-500">
+            <input type="text" id="horaLlegada" value="08:30 AM" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-sm text-slate-200 focus:outline-none focus:border-blue-500">
           </div>
           <div>
             <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Hora Salida</label>
-            <input type="text" name="horaSalida" value="09:15 AM" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-sm text-slate-200 focus:outline-none focus:border-blue-500">
+            <input type="text" id="horaSalida" value="09:15 AM" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-sm text-slate-200 focus:outline-none focus:border-blue-500">
           </div>
         </div>
 
@@ -87,9 +88,142 @@
         </button>
       </form>
     </div>
+
+    <!-- PANEL MONITOREO -->
+    <div id="view-monitoreo" class="hidden w-full max-w-4xl bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl p-6 sm:p-8 space-y-6">
+      <div>
+        <h2 class="text-xl font-bold text-white">Monitoreo de Entregas</h2>
+        <p class="text-xs text-slate-400 mt-1">Estado de las entregas en tiempo real</p>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-sm text-slate-300">
+          <thead class="bg-slate-950 text-slate-400 text-xs uppercase tracking-wider">
+            <tr>
+              <th class="p-3">Pedido</th>
+              <th class="p-3">Conductor</th>
+              <th class="p-3">Hora Llegada</th>
+              <th class="p-3">Hora Salida</th>
+              <th class="p-3">Estado</th>
+              <th class="p-3">Firma</th>
+            </tr>
+          </thead>
+          <tbody id="tablaMonitoreo" class="divide-y divide-slate-800">
+            <!-- Carga dinámica -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- PANEL ADMIN -->
+    <div id="view-admin" class="hidden w-full max-w-lg bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl p-6 sm:p-8 text-center">
+      <h2 class="text-xl font-bold text-white mb-2">Panel Administrativo</h2>
+      <p class="text-xs text-slate-400">Gestión global de rutas y configuración de flota.</p>
+    </div>
+
   </main>
 
   <script>
+    // Estado de pedidos en memoria / localStorage
+    let pedidos = JSON.parse(localStorage.getItem('pedidos_ferrocables')) || [
+      { id: '12345', nombre: 'FACTURA 12345 - PRUEBAS', conductor: 'ANDRES LOPEZ', estado: 'PENDIENTE', horaLlegada: '-', horaSalida: '-', firma: null },
+      { id: '12346', nombre: 'REMISIÓN 98765 - CLIENTE B', conductor: 'ANDRES LOPEZ', estado: 'PENDIENTE', horaLlegada: '-', horaSalida: '-', firma: null }
+    ];
+
+    function guardarEstado() {
+      localStorage.setItem('pedidos_ferrocables', JSON.stringify(pedidos));
+    }
+
+    // Manejo de Solapas (Tabs)
+    function switchTab(tab) {
+      document.getElementById('view-conductor').classList.add('hidden');
+      document.getElementById('view-monitoreo').classList.add('hidden');
+      document.getElementById('view-admin').classList.add('hidden');
+
+      document.querySelectorAll('.tab-btn').forEach(b => {
+        b.classList.remove('bg-blue-600', 'text-white', 'shadow');
+        b.classList.add('text-slate-300');
+      });
+
+      document.getElementById(`view-${tab}`).classList.remove('hidden');
+      const activeBtn = document.getElementById(`btn-${tab}`);
+      activeBtn.classList.add('bg-blue-600', 'text-white', 'shadow');
+      activeBtn.classList.remove('text-slate-300');
+
+      if (tab === 'monitoreo') renderMonitoreo();
+      if (tab === 'conductor') cargarPedidosPendientes();
+    }
+
+    // Cargar solo los pendientes en el select del conductor
+    function cargarPedidosPendientes() {
+      const select = document.getElementById('selectPedidos');
+      const conductor = document.getElementById('selectConductor').value;
+      select.innerHTML = '';
+
+      const pendientes = pedidos.filter(p => p.conductor === conductor && p.estado === 'PENDIENTE');
+
+      if (pendientes.length === 0) {
+        select.innerHTML = '<option value="">-- NO HAY PEDIDOS PENDIENTES --</option>';
+      } else {
+        pendientes.forEach(p => {
+          select.innerHTML += `<option value="${p.id}">${p.nombre} (PENDIENTE)</option>`;
+        });
+      }
+    }
+
+    // Renderizar tabla en Monitoreo
+    function renderMonitoreo() {
+      const tbody = document.getElementById('tablaMonitoreo');
+      tbody.innerHTML = '';
+
+      pedidos.forEach(p => {
+        const estadoBadge = p.estado === 'ENTREGADO' 
+          ? `<span class="px-2 py-1 bg-emerald-500/20 text-emerald-400 text-xs rounded-full border border-emerald-500/30">ENTREGADO</span>`
+          : `<span class="px-2 py-1 bg-amber-500/20 text-amber-400 text-xs rounded-full border border-amber-500/30">PENDIENTE</span>`;
+
+        const imgFirma = p.firma 
+          ? `<img src="${p.firma}" class="h-8 bg-white p-1 rounded border border-slate-700">`
+          : `<span class="text-slate-500 text-xs">Sin firma</span>`;
+
+        tbody.innerHTML += `
+          <tr class="hover:bg-slate-800/50 transition">
+            <td class="p-3 font-medium text-white">${p.nombre}</td>
+            <td class="p-3">${p.conductor}</td>
+            <td class="p-3">${p.horaLlegada}</td>
+            <td class="p-3">${p.horaSalida}</td>
+            <td class="p-3">${estadoBadge}</td>
+            <td class="p-3">${imgFirma}</td>
+          </tr>
+        `;
+      });
+    }
+
+    // Registrar entrega
+    function registrarEntrega(e) {
+      e.preventDefault();
+      const pedidoId = document.getElementById('selectPedidos').value;
+
+      if (!pedidoId) {
+        alert('Por favor selecciona un pedido válido.');
+        return;
+      }
+
+      const pedido = pedidos.find(p => p.id === pedidoId);
+      if (pedido) {
+        pedido.estado = 'ENTREGADO';
+        pedido.horaLlegada = document.getElementById('horaLlegada').value;
+        pedido.horaSalida = document.getElementById('horaSalida').value;
+        pedido.firma = canvas.toDataURL('image/png');
+
+        guardarEstado();
+        cargarPedidosPendientes();
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        alert('¡Entrega registrada con éxito! El pedido ha pasado a estado ENTREGADO.');
+      }
+    }
+
+    // Lógica Canvas Firma
     const canvas = document.getElementById('signatureCanvas');
     const ctx = canvas.getContext('2d');
     const clearBtn = document.getElementById('clearCanvasBtn');
@@ -143,6 +277,9 @@
     clearBtn.addEventListener('click', () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
     });
+
+    // Inicialización
+    cargarPedidosPendientes();
   </script>
 </body>
 </html>
