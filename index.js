@@ -1,3 +1,4 @@
+const express = require('express');
 const express = require("express");
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -349,4 +350,5 @@ const DASHBOARD_HTML = \`<!DOCTYPE html>
 </html>\`;
 
 app.get(/, (req, res) => res.send(DASHBOARD_HTML));
+app.use(express.static('public'));
 app.listen(PORT, () => console.log("Servidor activo"));
