@@ -6,10 +6,11 @@
   <title>Sistema de Gestión de Rutas</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    input[type="time"]::-webkit-calendar-picker-indicator { filter: invert(1); cursor: pointer; }
+  </style>
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col font-sans">
-
-  <!-- Header -->
   <header class="bg-slate-900 border-b border-slate-800 sticky top-0 z-50">
     <div class="max-w-7xl mx-auto px-4 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
       <div class="flex items-center space-x-3">
@@ -20,23 +21,14 @@
         </div>
       </div>
       <nav class="flex space-x-2 bg-slate-900 p-1 rounded-lg border border-slate-800">
-        <button id="btn-admin" onclick="switchTab('admin')" class="tab-btn px-4 py-2 text-sm font-medium rounded-md text-slate-300 hover:text-white transition">
-          <i class="fa-solid fa-user-shield mr-2"></i>Admin
-        </button>
-        <button id="btn-conductor" onclick="switchTab('conductor')" class="tab-btn px-4 py-2 text-sm font-medium rounded-md text-white bg-blue-600 shadow">
-          <i class="fa-solid fa-steering-wheel mr-2"></i>Conductor
-        </button>
-        <button id="btn-monitoreo" onclick="switchTab('monitoreo')" class="tab-btn px-4 py-2 text-sm font-medium rounded-md text-slate-300 hover:text-white transition">
-          <i class="fa-solid fa-chart-line mr-2"></i>Monitoreo
-        </button>
+        <button id="btn-admin" onclick="switchTab('admin')" class="tab-btn px-4 py-2 text-sm font-medium rounded-md text-slate-300 hover:text-white transition">Admin</button>
+        <button id="btn-conductor" onclick="switchTab('conductor')" class="tab-btn px-4 py-2 text-sm font-medium rounded-md text-white bg-blue-600 shadow">Conductor</button>
+        <button id="btn-monitoreo" onclick="switchTab('monitoreo')" class="tab-btn px-4 py-2 text-sm font-medium rounded-md text-slate-300 hover:text-white transition">Monitoreo</button>
       </nav>
     </div>
   </header>
 
-  <!-- Content Container -->
   <main class="flex-grow flex items-center justify-center p-4">
-
-    <!-- PANEL CONDUCTOR -->
     <div id="view-conductor" class="w-full max-w-lg bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl p-6 sm:p-8 space-y-6">
       <div>
         <h2 class="text-xl font-bold text-white">Reporte del Conductor</h2>
@@ -54,159 +46,119 @@
         <div>
           <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Pedidos / Entregas Asignadas</label>
           <select id="selectPedidos" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-sm text-slate-200 focus:outline-none focus:border-blue-500" required>
-            <!-- Carga dinámica -->
           </select>
         </div>
 
         <div class="grid grid-cols-2 gap-4">
           <div>
             <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Hora Llegada</label>
-            <input type="text" id="horaLlegada" value="08:30 AM" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-sm text-slate-200 focus:outline-none focus:border-blue-500">
+            <input type="time" id="horaLlegada" value="08:30" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-sm text-slate-200 focus:outline-none cursor-pointer">
           </div>
           <div>
             <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Hora Salida</label>
-            <inputtype="time" id="horaSalida" value="09:15 AM" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-sm text-slate-200 focus:outline-none focus:border-blue-500">
+            <input type="time" id="horaSalida" value="09:15" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-sm text-slate-200 focus:outline-none cursor-pointer">
           </div>
         </div>
 
-        <!-- MÓDULO DE FIRMA DEL CLIENTE -->
         <div class="pt-2">
           <div class="flex justify-between items-center mb-2">
             <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400">Firma del Cliente (Recibido)</label>
-            <button type="button" id="clearCanvasBtn" class="text-xs text-red-400 hover:text-red-300 transition flex items-center gap-1">
-              <i class="fa-solid fa-rotate-left"></i> Limpiar
-            </button>
+            <button type="button" id="clearCanvasBtn" class="text-xs text-red-400 hover:text-red-300">Limpiar</button>
           </div>
-          <div class="border border-slate-700 rounded-xl bg-white overflow-hidden shadow-inner">
+          <div class="border border-slate-700 rounded-xl bg-white overflow-hidden">
             <canvas id="signatureCanvas" class="w-full h-36 touch-none cursor-crosshair"></canvas>
           </div>
         </div>
 
-        <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-medium py-3 rounded-xl transition flex items-center justify-center space-x-2 shadow-lg shadow-emerald-900/20">
-          <i class="fa-solid fa-circle-check"></i>
-          <span>Registrar Entrega Realizada</span>
+        <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-medium py-3 rounded-xl transition shadow-lg">
+          Registrar Entrega Realizada
         </button>
       </form>
     </div>
 
-    <!-- PANEL MONITOREO -->
-    <div id="view-monitoreo" class="hidden w-full max-w-4xl bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl p-6 sm:p-8 space-y-6">
-      <div>
-        <h2 class="text-xl font-bold text-white">Monitoreo de Entregas</h2>
-        <p class="text-xs text-slate-400 mt-1">Estado de las entregas en tiempo real</p>
-      </div>
-
+    <div id="view-monitoreo" class="hidden w-full max-w-4xl bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl p-6 space-y-6">
+      <h2 class="text-xl font-bold text-white">Control y Monitoreo de Ruteros</h2>
       <div class="overflow-x-auto">
         <table class="w-full text-left text-sm text-slate-300">
-          <thead class="bg-slate-950 text-slate-400 text-xs uppercase tracking-wider">
+          <thead class="bg-slate-950 text-slate-400 text-xs uppercase">
             <tr>
-              <th class="p-3">Pedido</th>
+              <th class="p-3">ID Rutero</th>
+              <th class="p-3">Fecha</th>
               <th class="p-3">Conductor</th>
-              <th class="p-3">Hora Llegada</th>
-              <th class="p-3">Hora Salida</th>
+              <th class="p-3">Placa</th>
+              <th class="p-3">Hora Llegada / Salida</th>
               <th class="p-3">Estado</th>
               <th class="p-3">Firma</th>
             </tr>
           </thead>
-          <tbody id="tablaMonitoreo" class="divide-y divide-slate-800">
-            <!-- Carga dinámica -->
-          </tbody>
+          <tbody id="tablaMonitoreo" class="divide-y divide-slate-800"></tbody>
         </table>
       </div>
     </div>
 
-    <!-- PANEL ADMIN -->
-    <div id="view-admin" class="hidden w-full max-w-lg bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl p-6 sm:p-8 text-center">
-      <h2 class="text-xl font-bold text-white mb-2">Panel Administrativo</h2>
-      <p class="text-xs text-slate-400">Gestión global de rutas y configuración de flota.</p>
+    <div id="view-admin" class="hidden w-full max-w-lg bg-slate-900 border border-slate-800 rounded-2xl p-6 text-center">
+      <h2 class="text-xl font-bold text-white">Panel Administrativo</h2>
     </div>
-
   </main>
 
   <script>
-    // Estado de pedidos en memoria / localStorage
     let pedidos = JSON.parse(localStorage.getItem('pedidos_ferrocables')) || [
-      { id: '12345', nombre: 'FACTURA 12345 - PRUEBAS', conductor: 'ANDRES LOPEZ', estado: 'PENDIENTE', horaLlegada: '-', horaSalida: '-', firma: null },
-      { id: '12346', nombre: 'REMISIÓN 98765 - CLIENTE B', conductor: 'ANDRES LOPEZ', estado: 'PENDIENTE', horaLlegada: '-', horaSalida: '-', firma: null }
+      { id: 'RUT-4208', nombre: 'FACTURA 12345 - PRUEBAS', conductor: 'ANDRES LOPEZ', placa: 'MNO-456', fecha: '2026-10-20', estado: 'ASIGNADO', horaLlegada: '-', horaSalida: '-', firma: null }
     ];
 
-    function guardarEstado() {
-      localStorage.setItem('pedidos_ferrocables', JSON.stringify(pedidos));
-    }
+    function guardarEstado() { localStorage.setItem('pedidos_ferrocables', JSON.stringify(pedidos)); }
 
-    // Manejo de Solapas (Tabs)
     function switchTab(tab) {
       document.getElementById('view-conductor').classList.add('hidden');
       document.getElementById('view-monitoreo').classList.add('hidden');
       document.getElementById('view-admin').classList.add('hidden');
-
-      document.querySelectorAll('.tab-btn').forEach(b => {
-        b.classList.remove('bg-blue-600', 'text-white', 'shadow');
-        b.classList.add('text-slate-300');
-      });
-
       document.getElementById(`view-${tab}`).classList.remove('hidden');
-      const activeBtn = document.getElementById(`btn-${tab}`);
-      activeBtn.classList.add('bg-blue-600', 'text-white', 'shadow');
-      activeBtn.classList.remove('text-slate-300');
-
       if (tab === 'monitoreo') renderMonitoreo();
       if (tab === 'conductor') cargarPedidosPendientes();
     }
 
-    // Cargar solo los pendientes en el select del conductor
     function cargarPedidosPendientes() {
       const select = document.getElementById('selectPedidos');
       const conductor = document.getElementById('selectConductor').value;
       select.innerHTML = '';
-
-      const pendientes = pedidos.filter(p => p.conductor === conductor && p.estado === 'PENDIENTE');
+      const pendientes = pedidos.filter(p => p.estado === 'ASIGNADO');
 
       if (pendientes.length === 0) {
         select.innerHTML = '<option value="">-- NO HAY PEDIDOS PENDIENTES --</option>';
       } else {
-        pendientes.forEach(p => {
-          select.innerHTML += `<option value="${p.id}">${p.nombre} (PENDIENTE)</option>`;
-        });
+        pendientes.forEach(p => { select.innerHTML += `<option value="${p.id}">${p.nombre} (PENDIENTE)</option>`; });
       }
     }
 
-    // Renderizar tabla en Monitoreo
     function renderMonitoreo() {
       const tbody = document.getElementById('tablaMonitoreo');
       tbody.innerHTML = '';
-
       pedidos.forEach(p => {
         const estadoBadge = p.estado === 'ENTREGADO' 
           ? `<span class="px-2 py-1 bg-emerald-500/20 text-emerald-400 text-xs rounded-full border border-emerald-500/30">ENTREGADO</span>`
-          : `<span class="px-2 py-1 bg-amber-500/20 text-amber-400 text-xs rounded-full border border-amber-500/30">PENDIENTE</span>`;
+          : `<span class="px-2 py-1 bg-amber-500/20 text-amber-400 text-xs rounded-full border border-amber-500/30">ASIGNADO</span>`;
 
         const imgFirma = p.firma 
-          ? `<img src="${p.firma}" class="h-8 bg-white p-1 rounded border border-slate-700">`
+          ? `<img src="${p.firma}" class="h-8 bg-white p-1 rounded">`
           : `<span class="text-slate-500 text-xs">Sin firma</span>`;
 
         tbody.innerHTML += `
-          <tr class="hover:bg-slate-800/50 transition">
-            <td class="p-3 font-medium text-white">${p.nombre}</td>
+          <tr class="hover:bg-slate-800/50">
+            <td class="p-3 font-medium text-white">${p.id}</td>
+            <td class="p-3">${p.fecha}</td>
             <td class="p-3">${p.conductor}</td>
-            <td class="p-3">${p.horaLlegada}</td>
-            <td class="p-3">${p.horaSalida}</td>
+            <td class="p-3">${p.placa}</td>
+            <td class="p-3">${p.horaLlegada} / ${p.horaSalida}</td>
             <td class="p-3">${estadoBadge}</td>
             <td class="p-3">${imgFirma}</td>
-          </tr>
-        `;
+          </tr>`;
       });
     }
 
-    // Registrar entrega
     function registrarEntrega(e) {
       e.preventDefault();
       const pedidoId = document.getElementById('selectPedidos').value;
-
-      if (!pedidoId) {
-        alert('Por favor selecciona un pedido válido.');
-        return;
-      }
+      if (!pedidoId) return alert('Selecciona un pedido.');
 
       const pedido = pedidos.find(p => p.id === pedidoId);
       if (pedido) {
@@ -214,19 +166,15 @@
         pedido.horaLlegada = document.getElementById('horaLlegada').value;
         pedido.horaSalida = document.getElementById('horaSalida').value;
         pedido.firma = canvas.toDataURL('image/png');
-
         guardarEstado();
         cargarPedidosPendientes();
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-        alert('¡Entrega registrada con éxito! El pedido ha pasado a estado ENTREGADO.');
+        alert('Entrega registrada. Cambiado a ENTREGADO.');
       }
     }
 
-    // Lógica Canvas Firma
     const canvas = document.getElementById('signatureCanvas');
     const ctx = canvas.getContext('2d');
-    const clearBtn = document.getElementById('clearCanvasBtn');
     let isDrawing = false;
 
     function resizeCanvas() {
@@ -235,7 +183,6 @@
       canvas.height = 140;
       ctx.strokeStyle = '#0f172a';
       ctx.lineWidth = 2.5;
-      ctx.lineCap = 'round';
     }
 
     window.addEventListener('resize', resizeCanvas);
@@ -248,65 +195,15 @@
       return { x: clientX - rect.left, y: clientY - rect.top };
     }
 
-    function startDrawing(e) {
-      isDrawing = true;
-      const { x, y } = getCoords(e);
-      ctx.beginPath();
-      ctx.moveTo(x, y);
-    }
+    canvas.addEventListener('mousedown', (e) => { isDrawing = true; ctx.beginPath(); ctx.moveTo(getCoords(e).x, getCoords(e).y); });
+    canvas.addEventListener('mousemove', (e) => { if (isDrawing) ctx.lineTo(getCoords(e).x, getCoords(e).y), ctx.stroke(); });
+    canvas.addEventListener('mouseup', () => isDrawing = false);
+    canvas.addEventListener('touchstart', (e) => { isDrawing = true; ctx.beginPath(); ctx.moveTo(getCoords(e).x, getCoords(e).y); }, { passive: false });
+    canvas.addEventListener('touchmove', (e) => { if (isDrawing) { e.preventDefault(); ctx.lineTo(getCoords(e).x, getCoords(e).y); ctx.stroke(); } }, { passive: false });
+    canvas.addEventListener('touchend', () => isDrawing = false);
 
-    function draw(e) {
-      if (!isDrawing) return;
-      e.preventDefault();
-      const { x, y } = getCoords(e);
-      ctx.lineTo(x, y);
-      ctx.stroke();
-    }
-
-    function stopDrawing() { isDrawing = false; }
-
-    canvas.addEventListener('mousedown', startDrawing);
-    canvas.addEventListener('mousemove', draw);
-    canvas.addEventListener('mouseup', stopDrawing);
-    canvas.addEventListener('mouseleave', stopDrawing);
-
-    canvas.addEventListener('touchstart', startDrawing, { passive: false });
-    canvas.addEventListener('touchmove', draw, { passive: false });
-    canvas.addEventListener('touchend', stopDrawing);
-
-    clearBtn.addEventListener('click', () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-    });
-
-    // Inicialización
+    document.getElementById('clearCanvasBtn').addEventListener('click', () => ctx.clearRect(0, 0, canvas.width, canvas.height));
     cargarPedidosPendientes();
   </script>
-
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-  const form = document.querySelector('form');
-  if (form) {
-    form.addEventListener('submit', (e) => {
-      e.preventDefault();
-      
-      const selectPedido = document.querySelector('select:nth-of-type(2)') || document.querySelector('select[name="pedido"]');
-      if (selectPedido && selectPedido.selectedIndex >= 0) {
-        selectPedido.options[selectPedido.selectedIndex].remove();
-      }
-      
-      const statusBadges = document.querySelectorAll('span, td');
-      statusBadges.forEach(el => {
-        if (el.textContent.trim().includes('ASIGNADO')) {
-          el.textContent = 'ENTREGADO';
-          el.className = 'px-2 py-1 bg-emerald-500/20 text-emerald-400 text-xs rounded-full border border-emerald-500/30';
-        }
-      });
-
-      alert('¡Entrega registrada! Estado actualizado a ENTREGADO.');
-    });
-  }
-});
-</script>
-
 </body>
 </html>
