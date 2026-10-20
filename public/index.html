@@ -281,5 +281,32 @@
     // Inicialización
     cargarPedidosPendientes();
   </script>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const form = document.querySelector('form');
+  if (form) {
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      
+      const selectPedido = document.querySelector('select:nth-of-type(2)') || document.querySelector('select[name="pedido"]');
+      if (selectPedido && selectPedido.selectedIndex >= 0) {
+        selectPedido.options[selectPedido.selectedIndex].remove();
+      }
+      
+      const statusBadges = document.querySelectorAll('span, td');
+      statusBadges.forEach(el => {
+        if (el.textContent.trim().includes('ASIGNADO')) {
+          el.textContent = 'ENTREGADO';
+          el.className = 'px-2 py-1 bg-emerald-500/20 text-emerald-400 text-xs rounded-full border border-emerald-500/30';
+        }
+      });
+
+      alert('¡Entrega registrada! Estado actualizado a ENTREGADO.');
+    });
+  }
+});
+</script>
+
 </body>
 </html>
