@@ -10,8 +10,8 @@
     input[type="time"]::-webkit-calendar-picker-indicator { filter: invert(1); cursor: pointer; }
   </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col font-sans">
-  <header class="bg-slate-900 border-b border-slate-800 sticky top-0 z-50">
+<body class="bg-slate-100 text-slate-900 min-h-screen flex flex-col font-sans">
+  <header class="bg-white border-b border-slate-800 sticky top-0 z-50">
     <div class="max-w-7xl mx-auto px-4 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
       <div class="flex items-center space-x-3">
         <i class="fa-solid fa-truck-fast text-2xl text-blue-500"></i>
@@ -20,43 +20,43 @@
           <p class="text-xs text-slate-400">Asignación de Ruteros & Entregas</p>
         </div>
       </div>
-      <nav class="flex space-x-2 bg-slate-900 p-1 rounded-lg border border-slate-800">
-        <button id="btn-admin" onclick="switchTab('admin')" class="tab-btn px-4 py-2 text-sm font-medium rounded-md text-slate-300 hover:text-white transition">Admin</button>
-        <button id="btn-conductor" onclick="switchTab('conductor')" class="tab-btn px-4 py-2 text-sm font-medium rounded-md text-white bg-blue-600 shadow">Conductor</button>
-        <button id="btn-monitoreo" onclick="switchTab('monitoreo')" class="tab-btn px-4 py-2 text-sm font-medium rounded-md text-slate-300 hover:text-white transition">Monitoreo</button>
+      <nav class="flex space-x-2 bg-white p-1 rounded-lg border border-slate-800">
+        <button id="btn-admin" onclick="switchTab('admin')" class="tab-btn px-4 py-2 text-sm font-medium rounded-md text-slate-300 hover:text-slate-900 transition">Admin</button>
+        <button id="btn-conductor" onclick="switchTab('conductor')" class="tab-btn px-4 py-2 text-sm font-medium rounded-md text-slate-900 bg-blue-600 shadow">Conductor</button>
+        <button id="btn-monitoreo" onclick="switchTab('monitoreo')" class="tab-btn px-4 py-2 text-sm font-medium rounded-md text-slate-300 hover:text-slate-900 transition">Monitoreo</button>
       </nav>
     </div>
   </header>
 
   <main class="flex-grow flex items-center justify-center p-4">
-    <div id="view-conductor" class="w-full max-w-lg bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl p-6 sm:p-8 space-y-6">
+    <div id="view-conductor" class="w-full max-w-lg bg-white border border-slate-800 rounded-2xl shadow-2xl p-6 sm:p-8 space-y-6">
       <div>
-        <h2 class="text-xl font-bold text-white">Reporte del Conductor</h2>
+        <h2 class="text-xl font-bold text-slate-900">Reporte del Conductor</h2>
         <p class="text-xs text-slate-400 mt-1">Selecciona tu nombre y la entrega que estás ejecutando</p>
       </div>
 
       <form id="conductorForm" class="space-y-4" onsubmit="registrarEntrega(event)">
         <div>
           <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Conductor</label>
-          <select id="selectConductor" onchange="cargarPedidosPendientes()" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-sm text-slate-200 focus:outline-none focus:border-blue-500">
+          <select id="selectConductor" onchange="cargarPedidosPendientes()" class="w-full bg-slate-100 border border-slate-800 rounded-lg px-4 py-3 text-sm text-slate-800 focus:outline-none focus:border-blue-500">
             <option value="ANDRES LOPEZ">ANDRÉS LÓPEZ (MNO-456)</option>
           </select>
         </div>
 
         <div>
           <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Pedidos / Entregas Asignadas</label>
-          <select id="selectPedidos" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-sm text-slate-200 focus:outline-none focus:border-blue-500" required>
+          <select id="selectPedidos" class="w-full bg-slate-100 border border-slate-800 rounded-lg px-4 py-3 text-sm text-slate-800 focus:outline-none focus:border-blue-500" required>
           </select>
         </div>
 
         <div class="grid grid-cols-2 gap-4">
           <div>
             <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Hora Llegada</label>
-            <input type="time" id="horaLlegada" value="08:30" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-sm text-slate-200 focus:outline-none cursor-pointer">
+            <input type="time" id="horaLlegada" value="08:30" class="w-full bg-slate-100 border border-slate-800 rounded-lg px-4 py-3 text-sm text-slate-800 focus:outline-none cursor-pointer">
           </div>
           <div>
             <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Hora Salida</label>
-            <input type="time" id="horaSalida" value="09:15" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-sm text-slate-200 focus:outline-none cursor-pointer">
+            <input type="time" id="horaSalida" value="09:15" class="w-full bg-slate-100 border border-slate-800 rounded-lg px-4 py-3 text-sm text-slate-800 focus:outline-none cursor-pointer">
           </div>
         </div>
 
@@ -70,17 +70,17 @@
           </div>
         </div>
 
-        <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-medium py-3 rounded-xl transition shadow-lg">
+        <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-500 text-slate-900 font-medium py-3 rounded-xl transition shadow-lg">
           Registrar Entrega Realizada
         </button>
       </form>
     </div>
 
-    <div id="view-monitoreo" class="hidden w-full max-w-4xl bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl p-6 space-y-6">
-      <h2 class="text-xl font-bold text-white">Control y Monitoreo de Ruteros</h2>
+    <div id="view-monitoreo" class="hidden w-full max-w-4xl bg-white border border-slate-800 rounded-2xl shadow-2xl p-6 space-y-6">
+      <h2 class="text-xl font-bold text-slate-900">Control y Monitoreo de Ruteros</h2>
       <div class="overflow-x-auto">
         <table class="w-full text-left text-sm text-slate-300">
-          <thead class="bg-slate-950 text-slate-400 text-xs uppercase">
+          <thead class="bg-slate-100 text-slate-400 text-xs uppercase">
             <tr>
               <th class="p-3">ID Rutero</th>
               <th class="p-3">Fecha</th>
@@ -96,8 +96,8 @@
       </div>
     </div>
 
-    <div id="view-admin" class="hidden w-full max-w-lg bg-slate-900 border border-slate-800 rounded-2xl p-6 text-center">
-      <h2 class="text-xl font-bold text-white">Panel Administrativo</h2>
+    <div id="view-admin" class="hidden w-full max-w-lg bg-white border border-slate-800 rounded-2xl p-6 text-center">
+      <h2 class="text-xl font-bold text-slate-900">Panel Administrativo</h2>
     </div>
   </main>
 
@@ -144,7 +144,7 @@
 
         tbody.innerHTML += `
           <tr class="hover:bg-slate-800/50">
-            <td class="p-3 font-medium text-white">${p.id}</td>
+            <td class="p-3 font-medium text-slate-900">${p.id}</td>
             <td class="p-3">${p.fecha}</td>
             <td class="p-3">${p.conductor}</td>
             <td class="p-3">${p.placa}</td>
