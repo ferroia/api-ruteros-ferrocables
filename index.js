@@ -6,7 +6,7 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// DESACTIVAR CACHÉ EN EL NAVEGADOR
+// Desactivar caché para que los cambios se vean en tu pestaña habitual
 app.use((req, res, next) => {
   res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
   res.set('Pragma', 'no-cache');
@@ -14,18 +14,14 @@ app.use((req, res, next) => {
   next();
 });
 
-// Servir la carpeta public sin almacenamiento en memoria caché
-app.use(express.static(path.join(__dirname, 'public'), {
-  etag: false,
-  lastModified: false,
-  maxAge: 0
-}));
+// Servir archivos de la carpeta public
+app.use(express.static(path.join(__dirname, 'public')));
 
-// Servir la vista principal public/index.html siempre fresca
-app.get('*', (req, res) => {
+// Ruta principal limpia
+app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 app.listen(PORT, () => {
-  console.log(`Servidor de FERROCABLES corriendo sin caché en el puerto ${PORT}`);
+  console.log(`Servidor de FERROCABLES corriendo en puerto ${PORT}`);
 });
